@@ -1,0 +1,29 @@
+@mixin flex($horizontal-position: center, $vertical-position: center, $direction: row) {
+	display: flex;
+	flex-direction: $direction;
+	justify-content: $horizontal-position;
+	align-items: $vertical-position;
+
+	@if ($direction == column) {
+		justify-content: $vertical-position;
+		align-items: $horizontal-position;
+	}
+}
+
+@mixin pos($position: absolute, $top: initial, $left: initial, $bottom: initial, $right: initial) {
+	position: $position;
+	top: $top;
+	left: $left;
+	bottom: $bottom;
+	right: $right;
+}
+
+@mixin transition($prop: all, $duration: 0.35, $delay: 0, $timing-fn: ease) {
+	transition: $prop #{$duration}s #{$delay}s $timing-fn;
+}
+
+@mixin pseudo($display: block, $pos: absolute, $content: "") {
+	content: $content;
+	position: $pos;
+	display: $display;
+}

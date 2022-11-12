@@ -1,0 +1,90 @@
+@use "mixins" as mix;
+@use "colors" as c;
+
+.tiles-cnt {
+	@include mix.pos(relative);
+	@include mix.flex(stretch, flex-start, column);
+	overflow: hidden;
+
+	&__overlay {
+		border-radius: 2rem;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		padding: 4rem 0;
+	}
+
+	&__banner {
+		pointer-events: none;
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: 100px;
+		z-index: 100;
+
+		&--ease {
+			height: 20px;
+		}
+
+		&--top {
+			top: 0;
+			@include c.themed() {
+				background: linear-gradient(c.t(c.$app-bg) 0, transparent);
+			}
+		}
+
+		&--bottom {
+			bottom: 0;
+			@include c.themed() {
+				background: linear-gradient(transparent, c.t(c.$app-bg));
+			}
+		}
+	}
+}
+
+.tile-cnt {
+	@include mix.flex(stretch, flex-start, column);
+	gap: 2.5rem;
+}
+
+.tile {
+	@include mix.flex(stretch, flex-start, column);
+	gap: 2.5rem;
+	flex: 1;
+	min-height: auto;
+	padding: 2.5rem;
+	margin: 0 2.5rem;
+	border-radius: 2rem;
+
+	@include c.themed() {
+		box-shadow: c.t(c.$shadow);
+		background: c.t(c.$second-color);
+	}
+
+	&__header {
+		@include mix.flex(space-between);
+	}
+
+	&__header-title {
+		font-weight: 500;
+	}
+
+	&__button {
+		border: none;
+		padding: 1rem 1.5rem;
+		border-radius: 0.75rem;
+		font-weight: 600;
+
+		@include c.themed() {
+			color: c.t(c.$gray-color);
+			background: c.t(c.$accent-color);
+			cursor: pointer;
+		}
+	}
+
+	&__content {
+		@include mix.flex;
+		flex: 1;
+		max-width: 100%;
+	}
+}

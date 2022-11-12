@@ -1,0 +1,162 @@
+@use "mixins" as mix;
+@use "colors" as c;
+
+.button {
+	@include mix.flex;
+	gap: 0.5rem;
+	outline: none;
+	font-family: "inter";
+	border: 2px solid transparent;
+	padding: 1rem 2rem;
+	border-radius: 3rem;
+	font-size: 1.75rem;
+	font-weight: 500;
+	margin: 1rem 2rem;
+	cursor: pointer;
+	transition: background 0.35s 0s ease, box-shadow 0.35s 0s ease;
+
+	@include c.themed() {
+		box-shadow: 0 2px 25px 0 rgba(c.t(c.$primary-color), 0.3);
+		background: c.t(c.$primary-color);
+		color: c.t(c.$app-bg);
+	}
+
+	&--long {
+		width: 100%;
+	}
+
+	&--off {
+		pointer-events: none;
+		@include c.themed() {
+			background: c.t(c.$gray-color);
+			box-shadow: none;
+		}
+
+		&:hover {
+			@include c.themed() {
+				background: none;
+				border-color: transparent;
+			}
+		}
+	}
+
+	&--secondary {
+		@include c.themed() {
+			background: none;
+			color: c.t(c.$text);
+			border: 2px solid c.t(c.$primary-color);
+			box-shadow: none;
+		}
+
+		&:hover {
+			@include c.themed() {
+				background: none;
+			}
+		}
+	}
+
+	&__icon {
+		@include mix.flex;
+		font-weight: 600;
+		font-size: 2rem;
+	}
+
+	&:hover {
+		@include c.themed() {
+			background: darken(c.t(c.$primary-color), 4);
+			border-color: darken(c.t(c.$primary-color), 4);
+		}
+	}
+
+	&:focus-visible {
+		@include c.themed() {
+			border: 2px solid c.t(c.$text);
+		}
+	}
+}
+
+.box {
+	padding: 2rem;
+	margin: 0.5rem 2rem;
+	border-radius: 2rem;
+	@include c.themed() {
+		color: c.t(c.$text);
+		background: c.t(c.$second-color);
+		box-shadow: c.t(c.$shadow);
+	}
+
+	&__header {
+		font-size: 2.4rem;
+		margin-bottom: 3rem;
+
+		&--hidden {
+			display: none;
+		}
+	}
+
+	&__title {
+		font-weight: 500;
+	}
+}
+
+.toggler {
+	cursor: pointer;
+	--t-width: 30px;
+	@include mix.pos(relative);
+	$this: &;
+
+	&__field {
+		width: var(--t-width);
+		height: 15px;
+		border-radius: 2rem;
+		@include c.themed() {
+			background: c.t(c.$gray-color);
+		}
+	}
+
+	&__zip {
+		@include mix.pos(absolute, 50%, 0);
+		@include mix.transition(transform);
+		@include c.themed() {
+			background: c.t(c.$focus-bg);
+			width: 19px;
+			height: 19px;
+			border-radius: 50%;
+			box-shadow: 0 2px 15px 0 c.t(c.$shadow-color);
+		}
+		transform: translate(-2px, -50%);
+	}
+
+	&--toggled {
+		#{$this}__field {
+			@include c.themed() {
+				background: c.t(c.$primary-color);
+			}
+		}
+
+		#{$this}__zip {
+			transform: translate(calc(var(--t-width) - 100% + 2px), -50%);
+		}
+	}
+}
+
+.input {
+	border-radius: 10px;
+	padding: 1rem;
+	width: 100%;
+	margin: 0.5rem 0;
+	font-size: 2.4rem;
+	background: transparent;
+	@include mix.transition(border);
+
+	@include c.themed() {
+		border: 3px solid c.t(c.$gray-color);
+		color: c.t(c.$text);
+
+		&:focus {
+			outline: none;
+			border: 3px solid c.t(c.$primary-color);
+			box-shadow: 0 0 0 2px rgba(c.t(c.$primary-color), 0.2);
+		}
+	}
+}

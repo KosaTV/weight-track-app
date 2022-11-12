@@ -1,0 +1,45 @@
+@use "global-elements";
+@use "section";
+@use "calendar";
+@use "tile";
+@use "menu";
+@use "config";
+@use "header";
+@use "popup";
+@use "mixins" as mix;
+@use "colors" as c;
+
+.app {
+	@include mix.pos(relative);
+	@include mix.flex(stretch, stretch, column);
+	width: 100vw;
+	height: 100vh;
+	font-family: "Inter";
+
+	@include c.themed() {
+		background: c.t(c.$app-bg);
+		color: c.t(c.$text);
+	}
+}
+
+.main {
+	@include mix.flex(stretch, flex-start, column);
+	flex: 1;
+	padding-bottom: 126px;
+	overflow: auto;
+
+	&__button {
+		margin-top: 1rem;
+		margin-bottom: 0;
+	}
+}
+
+.content {
+	&__header {
+		font-size: 3.2rem;
+	}
+}
+
+.menu-item-link {
+	text-decoration: none;
+}

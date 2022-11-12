@@ -1,0 +1,151 @@
+@use "mixins" as mix;
+@use "colors" as c;
+
+.section {
+	&--main {
+		width: auto;
+		margin: 1rem;
+		height: 200px;
+		border-radius: 2rem;
+		padding: 2rem;
+		@include c.themed() {
+			box-shadow: c.t(c.$shadow);
+		}
+	}
+
+	&__header {
+		&--secondary {
+			font-weight: 400;
+			font-size: 1.5rem;
+			@include c.themed() {
+				color: c.t(c.$gray-color);
+			}
+		}
+
+		&--main {
+			font-weight: 500;
+			font-size: 3rem;
+		}
+
+		&--in-section {
+			margin-bottom: 2rem;
+		}
+	}
+}
+
+.settings-list-item {
+	@include mix.flex(space-between);
+	padding: 2rem;
+	margin: 1.25rem 0;
+	border-radius: 1rem;
+
+	@include c.themed() {
+		box-shadow: 0 5px 35px 0 c.t(c.$shadow-color);
+	}
+
+	&__text {
+		@include mix.flex;
+	}
+
+	&__action {
+		@include mix.flex;
+	}
+
+	&__icon {
+		@include mix.flex;
+		font-size: 2rem;
+		margin-right: 0.6rem;
+		@include c.themed() {
+			color: c.t(c.$gray-color);
+		}
+	}
+
+	&__name {
+		font-weight: 500;
+		@include c.themed() {
+			color: c.t(c.$text);
+		}
+	}
+}
+
+.history-weight-data {
+	@include mix.flex(center, center, column);
+
+	&__weight {
+		font-size: 2.5rem;
+		font-weight: 600;
+		@include c.themed() {
+			color: c.t(c.$primary-color);
+		}
+	}
+}
+
+.weight-data {
+	&__button {
+		font-size: 2.5rem;
+		margin: 0rem;
+		padding: 0.75rem 1.5rem;
+
+		@include c.themed() {
+			box-shadow: none;
+			background: none;
+			color: c.t(c.$gray-color);
+			border: none;
+		}
+
+		&:hover {
+			@include c.themed() {
+				background: none;
+			}
+		}
+	}
+}
+
+.weight-data-cnt {
+	@include mix.flex;
+}
+
+.update-weight-popup-cnt {
+	height: 100%;
+	@include mix.flex(center, center, column);
+
+	&__label {
+		font-weight: 500;
+		display: block;
+		text-align: center;
+		margin: 1rem 0;
+	}
+
+	&__main {
+		margin-bottom: 2rem;
+	}
+
+	&__input {
+		text-align: center;
+	}
+}
+
+.profile-info-list {
+	&__item {
+		@include mix.flex(space-between, center);
+		padding: 0.5rem;
+		font-size: 2rem;
+	}
+
+	&__label {
+		font-weight: 500;
+		@include c.themed() {
+			color: c.t(c.$text);
+		}
+	}
+
+	&__data {
+		@include c.themed() {
+			color: c.t(c.$gray-color);
+		}
+	}
+}
+
+.profile-config-cnt {
+	@include mix.flex(flex-end);
+}

@@ -1,0 +1,65 @@
+@use "mixins" as mix;
+@use "colors" as c;
+
+.popup-scene {
+	@include mix.pos(absolute, 0, 0);
+	@include mix.flex;
+	width: 100vw;
+	height: 100vh;
+	background: hsla(0, 0%, 0%, 0.15);
+}
+
+.popup {
+	$inner-space: 2rem;
+	@include mix.pos(absolute);
+	@include mix.flex(stretch, flex-start, column);
+	gap: 1rem;
+	padding: $inner-space;
+	border-radius: 1.5rem;
+	margin: 1rem;
+	max-width: 600px;
+	max-height: 400px;
+	width: 90%;
+	height: 400px;
+
+	@include c.themed() {
+		background: c.t(c.$second-color);
+		box-shadow: c.t(c.$shadow);
+		color: c.t("text");
+	}
+
+	&__content {
+		flex: 1;
+		font-size: 2rem;
+	}
+
+	&__header {
+		@include mix.flex(space-between);
+	}
+
+	&__title {
+		font-size: 2.4rem;
+	}
+
+	&__close-btn {
+		@include mix.flex;
+		cursor: pointer;
+		border: none;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		font-size: 3.2rem;
+		@include mix.transition(background);
+
+		@include c.themed() {
+			background: c.t(accent-color);
+			color: c.t(text);
+		}
+
+		&:hover {
+			@include c.themed() {
+				background: c.t(c.$hover-color);
+			}
+		}
+	}
+}
