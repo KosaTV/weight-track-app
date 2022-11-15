@@ -11,7 +11,8 @@ const eventTypes = {
 	DECREASE: "DECREASE"
 };
 
-const props = defineProps({userInfo: Object, addWeightToHistory: Function, getWeightFromHistory: Function});
+const props = defineProps({userDetails: Object, addWeightToHistory: Function, getWeightFromHistory: Function});
+const emit = defineEmits(["update-weight", "open-popup"]);
 
 const pickedDate = ref("");
 const modifiedWeightDiff = ref(0);
@@ -34,21 +35,21 @@ const handleDayPick = data => {
 };
 
 const getUserDateWeightFromPickedDate = () => {
-	return +props.userInfo.weightHistory?.[pickedDate.value.getFullYear()]?.[pickedDate.value.getMonth() + 1]?.[pickedDate.value.getDate()]?.weight;
+	return +props.userDetails.weightHistory?.[pickedDate.value.getFullYear()]?.[pickedDate.value.getMonth() + 1]?.[pickedDate.value.getDate()]?.weight;
 };
 
 const getWeight = () => {
 	let weight = (getUserDateWeightFromPickedDate() + modifiedWeightDiff.value).toFixed(1);
-	if (weight.endsWith(".0")) weight = (+weight).toFixed(0);
+	if (weight.endsWith(".0")) weight = Math.round(weight);
 	return weight;
 };
 </script>
 <template>
 	<Box :no-header="true">
 		<template #header></template>
-		<template #content><Calendar @dayPick="handleDayPick" :userInfo="props.userInfo" :getWeightFromHistory="getWeightFromHistory" /></template>
+		<template #content><Calendar @dayPick="handleDayPick" :userDetails="props.userDetails" :getWeightFromHistory="getWeightFromHistory" /></template>
 	</Box>
-	<Box v-if="pickedDate">
+	<Box v-if="pickedDate" :header-style="{margin: '1rem'}">
 		<template #header>
 			<h1 class="calendar-info">Your weight on {{ pickedDate.getDate() }} {{ dateHelper.months[pickedDate.getMonth()] }}</h1>
 		</template>
@@ -65,7 +66,7 @@ const getWeight = () => {
 					>
 						<ion-icon name="chevron-back-outline"></ion-icon>
 					</button>
-					<span class="history-weight-data__weight">{{ getWeight() + " " + userInfo.unit }}</span>
+					<span class="history-weight-data__weight">{{ getWeight() + " " + userDetails.unit }}</span>
 					<button class="button weight-data__button" @click="handleWeightChange(eventTypes.INCREASE)">
 						<ion-icon name="chevron-forward-outline"></ion-icon>
 					</button>

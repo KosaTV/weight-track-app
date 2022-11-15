@@ -12,6 +12,7 @@
 .app {
 	@include mix.pos(relative);
 	@include mix.flex(stretch, stretch, column);
+	overflow: hidden;
 	width: 100vw;
 	height: 100vh;
 	font-family: "Inter";

@@ -1,24 +1,35 @@
 @use "mixins" as mix;
 @use "colors" as c;
 
+.popup-enter-active,
+.popup-leave-active {
+	transition: opacity 0.25s 0s ease, scale 0.25s 0s ease;
+}
+
+.popup-enter-from,
+.popup-leave-to {
+	opacity: 0;
+	scale: 1.2;
+}
+
 .popup-scene {
 	@include mix.pos(absolute, 0, 0);
 	@include mix.flex;
 	width: 100vw;
 	height: 100vh;
 	background: hsla(0, 0%, 0%, 0.15);
+	z-index: 100000;
 }
 
 .popup {
 	$inner-space: 2rem;
 	@include mix.pos(absolute);
 	@include mix.flex(stretch, flex-start, column);
-	gap: 1rem;
-	padding: $inner-space;
+
 	border-radius: 1.5rem;
 	margin: 1rem;
 	max-width: 600px;
-	max-height: 400px;
+	max-height: 95%;
 	width: 90%;
 	height: 400px;
 
@@ -28,17 +39,35 @@
 		color: c.t("text");
 	}
 
+	&__profile-img {
+		padding: 1rem;
+
+		@include c.themed() {
+			border: 2px solid c.t(c.$gray-color);
+			box-shadow: c.t(c.$shadow);
+		}
+	}
+
 	&__content {
 		flex: 1;
 		font-size: 2rem;
+		overflow: auto;
+		padding: $inner-space;
 	}
 
 	&__header {
 		@include mix.flex(space-between);
+		padding: $inner-space;
+		border-radius: 1rem;
 	}
 
 	&__title {
 		font-size: 2.4rem;
+
+		&--centered {
+			width: 100%;
+			text-align: center;
+		}
 	}
 
 	&__close-btn {
@@ -61,5 +90,32 @@
 				background: c.t(c.$hover-color);
 			}
 		}
+	}
+}
+
+.popup-header {
+	&__title {
+		text-align: center;
+		font-weight: 500;
+		font-size: 2rem;
+	}
+}
+
+.popup-form {
+	@include mix.flex(center, flex-start, column);
+
+	&__row {
+		margin-bottom: 3.5rem;
+		margin-top: 2rem;
+	}
+
+	&__label {
+		display: block;
+		font-weight: 500;
+		margin: 0.5rem 0;
+	}
+
+	&__button {
+		margin-top: 4rem;
 	}
 }

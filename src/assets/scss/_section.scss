@@ -149,3 +149,33 @@
 .profile-config-cnt {
 	@include mix.flex(flex-end);
 }
+
+.file-input {
+	display: none;
+}
+
+.img-upload-field {
+	@include mix.pos;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+	border-radius: 50%;
+	background: black;
+	opacity: 0;
+	cursor: pointer;
+	@include mix.transition(opacity);
+
+	&__icon {
+		@include mix.pos(absolute, 50%, 50%);
+		display: block;
+		font-size: 5rem;
+		color: white;
+		translate: -50% -50%;
+	}
+
+	&:active {
+		opacity: 0.75;
+	}
+}

@@ -27,6 +27,10 @@
 
 .profile-cnt {
 	@include mix.pos(relative);
+
+	&__icon {
+		display: none;
+	}
 }
 
 .profile {

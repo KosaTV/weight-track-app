@@ -1,9 +1,26 @@
 <script setup>
-import {reactive} from "vue";
+import {reactive, onMounted, watch} from "vue";
 import {Line} from "vue-chartjs";
+import date from "../helpers/date";
 import {Chart, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale} from "chart.js";
 Chart.register(Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale);
-const props = defineProps({title: String, buttonText: String, appTheme: Object, colors: Object});
+const props = defineProps({title: String, buttonText: String, userDetails: Object, colors: Object, getWeightFromHistory: Function, userPreviousData: String});
+
+let last7Days = [];
+let weekDays = [];
+
+const getWeightInfoFrom7Days = () => {
+	last7Days = [];
+	weekDays = [];
+	for (let i = 0; i <= 6; i++) {
+		const now = new Date();
+		now.setDate(new Date().getDate() - i);
+		weekDays.push(date.weekDays[now.getDay()].substr(0, 3));
+		last7Days.push(props.getWeightFromHistory(now).weight);
+	}
+	weekDays.reverse();
+	last7Days.reverse();
+};
 
 const initStyles = {
 	display: "flex",
@@ -13,13 +30,13 @@ const initStyles = {
 };
 
 const chartData = reactive({
-	labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+	labels: weekDays,
 	datasets: [
 		{
 			label: "My Weight",
-			data: [62, 63, 62.5, 65, 68, 70, 73.5],
+			data: last7Days,
 			backgroundColor: props.colors.secondColor,
-			radius: "6",
+			radius: "7",
 			borderWidth: 2,
 			borderColor: "hsl(165, 100%, 39%)",
 			tension: 0.4,
@@ -68,6 +85,20 @@ const chartOptions = {
 		}
 	}
 };
+
+watch(props.userDetails, () => {
+	getWeightInfoFrom7Days();
+
+	chartData.datasets[0].backgroundColor = props.colors.secondColor;
+	chartData.datasets[0].data = last7Days;
+	chartData.labels = weekDays;
+});
+
+onMounted(() => {
+	if (props.userPreviousData.length) getWeightInfoFrom7Days();
+	chartData.datasets[0].data = last7Days;
+	chartData.labels = weekDays;
+});
 </script>
 <template>
 	<Line :chart-data="chartData" :styles="initStyles" :chart-options="chartOptions" />

@@ -1,20 +1,35 @@
 <script setup>
-const closePopup = () => {};
+import {watch, onUpdated} from "vue";
+const emit = defineEmits(["close-popup", "open", "close"]);
+const props = defineProps({width: String, height: String, isOpened: Boolean, noClose: Boolean, mode: String});
 
-defineEmits(["close-popup"]);
-const props = defineProps({width: String, height: String});
+const sendFormAppearanceEvent = () => {
+	if (props.isOpened) setTimeout(() => emit("open"));
+	else if (!props.isOpened) setTimeout(() => emit("close"));
+};
+
+watch(
+	() => props.isOpened,
+	() => {
+		sendFormAppearanceEvent();
+	}
+);
+
+const closePopup = () => {
+	if (!props.noClose) emit("close-popup");
+};
 </script>
 
 <template>
 	<Teleport to=".app">
-		<div class="popup-scene" @click.self="$emit('close-popup')">
-			<Transition name="popup">
-				<section class="popup" :style="{width: props.width, height: props.height}">
+		<Transition name="popup">
+			<div v-if="isOpened" class="popup-scene" @click.self="closePopup">
+				<section class="popup" :style="{width, height}">
 					<header class="popup__header">
-						<h2 class="popup__title">
+						<h2 class="popup__title" :class="{'popup__title--centered': mode === 'center'}">
 							<slot name="header" />
 						</h2>
-						<button class="popup__close-btn" @click="$emit(`close-popup`)">
+						<button v-if="!noClose" class="popup__close-btn" @click="closePopup">
 							<ion-icon name="close-outline"></ion-icon>
 						</button>
 					</header>
@@ -22,20 +37,9 @@ const props = defineProps({width: String, height: String});
 						<slot />
 					</section>
 				</section>
-			</Transition>
-		</div>
+			</div>
+		</Transition>
 	</Teleport>
 </template>
 
-<style scoped>
-.popup-enter-active,
-.popup-leave-active {
-	transition: opacity 1s 0s ease;
-}
-
-.popup-enter-from,
-.popup-leave-to {
-	opacity: 0;
-	transform: scale(1.1);
-}
-</style>
+<style scoped></style>

@@ -2,7 +2,7 @@
 import {reactive, ref, watch} from "vue";
 import {default as dateHelper} from "../helpers/date";
 
-const emit = defineEmits(["dayPick"]);
+const emit = defineEmits(["day-pick"]);
 const props = defineProps({userInfo: Object, getWeightFromHistory: Function});
 const currentTime = new Date();
 
@@ -25,10 +25,11 @@ const data = reactive({
 const getConditions = (day, column, row) => {
 	const isCurrent = day === currentTime.getDate() && currentTime.getMonth() === date.value.getMonth() && currentTime.getYear() === date.value.getYear();
 	const isShown = day > data.amountOfDays || (column <= data.startDay && row === 1);
+
 	const isLocked =
-		(day > date.value.getDate() && date.value.getMonth() >= currentTime.getMonth()) ||
+		(date.value.getMonth() >= currentTime.getMonth() && date.value.getFullYear() >= currentTime.getFullYear() && day > date.value.getDate()) ||
 		date.value.getFullYear() > currentTime.getFullYear() ||
-		date.value.getMonth() > currentTime.getMonth();
+		(date.value.getFullYear() >= currentTime.getFullYear() && date.value.getMonth() > currentTime.getMonth());
 
 	const pickedDate = new Date(date.value);
 	pickedDate.setDate(day);

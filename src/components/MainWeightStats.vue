@@ -3,7 +3,7 @@ import {ref, reactive, onMounted, watch} from "vue";
 import {Doughnut} from "vue-chartjs";
 import {Chart, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale} from "chart.js";
 Chart.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale);
-const props = defineProps({title: String, buttonText: String, userInfo: Object, appTheme: Object, colors: Object});
+const props = defineProps({title: String, buttonText: String, userDetails: Object, colors: Object});
 
 const initStyles = {
 	display: "flex",
@@ -12,15 +12,23 @@ const initStyles = {
 	width: "100%"
 };
 
-let gainedWeight = (props.userInfo.currentWeight - props.userInfo.startWeight).toFixed();
-let weightLabel = gainedWeight >= 0 ? "Gained" : "Lost";
+const chartElement = ref(null);
+
+const getWeightProgress = () => {
+	let progress = (((props.userDetails.currentWeight - props.userDetails.startWeight) / (props.userDetails.goalWeight - props.userDetails.startWeight)) * 100).toFixed();
+	return progress;
+};
+
+let weightFactor = [];
+let gainedWeight;
+let weightLabel;
 
 const doughnutData = reactive({
-	colors: ["hsl(165, 100%, 39%)", props.colors.accentColor],
+	colors: ref(["hsl(165, 100%, 39%)", props.colors.accentColor]),
 	centeredText: {
 		title: "Now",
-		mainContent: `${props.userInfo.currentWeight} ${props.userInfo.unit}`,
-		description: `${weightLabel} ~ ${Math.abs(gainedWeight)} ${props.userInfo.unit}`
+		mainContent: null,
+		description: null
 	}
 });
 
@@ -61,12 +69,12 @@ const drawWeightBorders = (chart, args, options) => {
 	ctx.font = "900 1.5rem Inter";
 	ctx.fillStyle = "hsl(0 0% 60%)";
 	ctx.textAlign = "center";
-	ctx.fillText(`${props.userInfo.startWeight}`, 12, height);
+	ctx.fillText(`${props.userDetails.startWeight}`, 12, height);
 	ctx.restore();
 	ctx.font = "900 1.5rem Inter";
 	ctx.fillStyle = "hsl(0 0% 60%)";
 	ctx.textAlign = "center";
-	ctx.fillText(`${props.userInfo.goalWeight}`, width - 12, height);
+	ctx.fillText(`${props.userDetails.goalWeight}`, width - 12, height);
 	ctx.restore();
 };
 
@@ -85,10 +93,7 @@ const chartData = reactive({
 	datasets: [
 		{
 			label: "My Weight",
-			data: [
-				(((props.userInfo.currentWeight - props.userInfo.startWeight) / (props.userInfo.goalWeight - props.userInfo.startWeight)) * 100).toFixed(),
-				100 - (((props.userInfo.currentWeight - props.userInfo.startWeight) / (props.userInfo.goalWeight - props.userInfo.startWeight)) * 100).toFixed()
-			],
+			data: weightFactor,
 			backgroundColor: doughnutData.colors,
 			borderWidth: 0,
 			hoverOffset: 4
@@ -98,21 +103,26 @@ const chartData = reactive({
 
 const plugins = reactive([drawCenteredText, drawLabelsText]);
 
-watch(props.userInfo, newUserInfo => {
-	const progress = (((props.userInfo.currentWeight - props.userInfo.startWeight) / (props.userInfo.goalWeight - props.userInfo.startWeight)) * 100).toFixed();
-	if (progress >= 0) {
-		chartData.datasets[0].data[0] = progress;
-		weightLabel = "Gained";
-	} else {
-		chartData.datasets[0].data[0] = 0;
-		weightLabel = "Lost";
-	}
+watch(props.userDetails, newUserInfo => {
+	const progress = getWeightProgress();
+	weightFactor = [progress, 100 - progress];
+	if (progress >= 0) weightLabel = "Gained";
+	else weightLabel = "Lost";
+	if (progress > 100) weightFactor = [100, 0];
+	else if (progress < 0) weightFactor = [0, 100];
 
-	chartData.datasets[0].data[1] =
-		100 - (((props.userInfo.currentWeight - props.userInfo.startWeight) / (props.userInfo.goalWeight - props.userInfo.startWeight)) * 100).toFixed();
-	doughnutData.centeredText.mainContent = `${props.userInfo.currentWeight} ${props.userInfo.unit}`;
-	gainedWeight = (props.userInfo.currentWeight - props.userInfo.startWeight).toFixed();
-	doughnutData.centeredText.description = `${weightLabel} ~ ${Math.abs(gainedWeight)} ${props.userInfo.unit}`;
+	chartData.datasets[0].data = weightFactor;
+
+	const ctx = chartElement.value.getContext("2d");
+	const gradient = ctx.createLinearGradient(0, 135, 120, 120);
+	gradient.addColorStop(0, "hsla(165, 100%, 39%,.1)");
+	gradient.addColorStop(1, "hsl(165, 100%, 39%)");
+
+	doughnutData.colors = [gradient, props.colors.accentColor];
+	doughnutData.centeredText.mainContent = `${props.userDetails.currentWeight} ${props.userDetails.unit}`;
+	gainedWeight = (props.userDetails.currentWeight - props.userDetails.startWeight).toFixed();
+	doughnutData.centeredText.description = `${weightLabel} ~ ${Math.abs(gainedWeight)} ${props.userDetails.unit}`;
+	chartData.datasets[0].backgroundColor = doughnutData.colors;
 });
 
 const chartOptions = {
@@ -131,12 +141,25 @@ const chartOptions = {
 };
 
 onMounted(() => {
-	const chart = document.querySelector("#doughnut-chart");
-	const ctx = chart.getContext("2d");
+	chartElement.value = document.querySelector("#doughnut-chart");
+	const ctx = chartElement.value.getContext("2d");
 	const gradient = ctx.createLinearGradient(0, 135, 120, 120);
 	gradient.addColorStop(0, "hsla(165, 100%, 39%,.1)");
 	gradient.addColorStop(1, "hsl(165, 100%, 39%)");
 	doughnutData.colors[0] = gradient;
+
+	gainedWeight = (props.userDetails.currentWeight - props.userDetails.startWeight).toFixed();
+	weightLabel = gainedWeight >= 0 ? "Gained" : "Lost";
+	doughnutData.centeredText.mainContent = `${props.userDetails.currentWeight} ${props.userDetails.unit}`;
+	doughnutData.centeredText.description = `${weightLabel} ~ ${Math.abs(gainedWeight)} ${props.userDetails.unit}`;
+
+	const progress = getWeightProgress();
+	weightFactor = [progress, 100 - progress];
+	if (progress >= 0) weightLabel = "Gained";
+	else weightLabel = "Lost";
+	if (progress > 100) weightFactor = [100, 0];
+	else if (progress < 0) weightFactor = [0, 100];
+	chartData.datasets[0].data = weightFactor;
 });
 </script>
 <template>
