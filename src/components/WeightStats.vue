@@ -4,7 +4,15 @@ import {Line} from "vue-chartjs";
 import date from "../helpers/date";
 import {Chart, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale} from "chart.js";
 Chart.register(Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale);
-const props = defineProps({title: String, buttonText: String, userDetails: Object, colors: Object, getWeightFromHistory: Function, userPreviousData: String});
+const props = defineProps({
+	title: String,
+	buttonText: String,
+	userDetails: Object,
+	colors: Object,
+	getWeightFromHistory: Function,
+	userPreviousData: String,
+	getLastWeightFromHistory: Function
+});
 
 let last7Days = [];
 let weekDays = [];
@@ -16,13 +24,12 @@ const getWeightInfoFrom7Days = () => {
 		const now = new Date();
 		now.setDate(new Date().getDate() - i);
 		let weight = props.getWeightFromHistory(now)?.weight;
-		if (!weight) {
-			weight = 0;
-			// let foundLastWeight;
-			// while(!foundLastWeight){
-			// 	now.setDate();
-			// }
-		}
+		//* It can be deleted if you want your chart to missing values, which is better instead of filling it by previous values
+		// if (!weight && i !== 0) {
+		// 	// weight = props.getLastWeightFromHistory();
+		// } else if (i === 0) {
+		// 	//TODO: include case
+		// }
 		weekDays.push(date.weekDays[now.getDay()].substr(0, 3));
 		last7Days.push(weight);
 	}

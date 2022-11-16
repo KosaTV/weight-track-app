@@ -17,6 +17,7 @@ const props = defineProps([
 	"colors",
 	"userDetails",
 	"addWeightToHistory",
+	"getLastWeightFromHistory",
 	"removeWeightfromHistory",
 	"removeWeightFromHistory",
 	"getWeightFromHistory",
@@ -112,9 +113,11 @@ const getWeight = () => {
 	</Box>
 	<ConfirmPopup :popups="popups" :action="deleteWeight" :togglePopup="togglePopup">
 		<template #title>Delete weight</template>
-		<p style="text-align: center">Are you sure you want to delete weight?</p>
-		<button class="button">yes</button>
-		<button class="button button--secondary" type="button" @click="() => togglePopup('confirmPopup')">no</button>
+		<p class="confirm-popup-description">Are you sure you want to delete weight?</p>
+		<section class="confirm-popup-action-cnt">
+			<button class="button">Yep</button>
+			<button class="button button--secondary" type="button" @click="() => togglePopup('confirmPopup')">Nah</button>
+		</section>
 	</ConfirmPopup>
 </template>
 <style scoped></style>

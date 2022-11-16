@@ -152,6 +152,10 @@
 
 .profile-config-cnt {
 	@include mix.flex(flex-end);
+
+	&__button {
+		margin: 1rem 2rem;
+	}
 }
 
 .file-input {

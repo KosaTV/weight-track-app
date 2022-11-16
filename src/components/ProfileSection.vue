@@ -97,7 +97,7 @@ const handleNewImage = e => {
 				</template>
 			</Box>
 			<div class="profile-config-cnt">
-				<button class="button" @click="$emit('open-popup', 'profileInfoPopup')">
+				<button class="button profile-config-cnt__button" @click="$emit('open-popup', 'profileInfoPopup')">
 					<span class="button__icon"> <ion-icon name="create-outline"></ion-icon></span>
 					Edit profile
 				</button>

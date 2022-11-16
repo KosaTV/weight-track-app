@@ -9,6 +9,7 @@ const props = defineProps([
 	"userDetails",
 	"addWeightToHistory",
 	"getWeightFromHistory",
+	"getLastWeightFromHistory",
 	"loadUserData",
 	"toggleAppTheme",
 	"colors,",
@@ -28,7 +29,13 @@ const emit = defineEmits(["update-weight", "open-popup"]);
 					<MainWeightStats :colors="colors" :user-details="userDetails" />
 				</Tile>
 				<Tile title="Statistics" buttonText="Week">
-					<WeightStats :colors="colors" :user-details="userDetails" :get-weight-from-history="getWeightFromHistory" :user-previous-data="userPreviousData" />
+					<WeightStats
+						:get-last-weight-from-history="getLastWeightFromHistory"
+						:colors="colors"
+						:user-details="userDetails"
+						:get-weight-from-history="getWeightFromHistory"
+						:user-previous-data="userPreviousData"
+					/>
 				</Tile>
 			</div>
 		</div>

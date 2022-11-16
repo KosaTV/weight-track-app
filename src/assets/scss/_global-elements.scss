@@ -12,7 +12,7 @@
 	border-radius: 3rem;
 	font-size: 1.75rem;
 	font-weight: 500;
-	margin: 1rem;
+	margin: 0.5rem;
 	transition: background 0.35s 0s ease, box-shadow 0.35s 0s ease;
 
 	@include c.themed() {
@@ -82,7 +82,7 @@
 		border-radius: 3rem;
 		font-size: 1.75rem;
 		font-weight: 500;
-		margin: 1rem;
+		margin: 0.5rem;
 		$this: &;
 
 		&,

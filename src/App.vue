@@ -98,8 +98,6 @@ const getLastWeightFromHistory = () => {
 	return latestWeight.weight;
 };
 
-getLastWeightFromHistory();
-
 const popups = reactive({
 	updateWeightPopup: {
 		opened: false,
@@ -263,6 +261,7 @@ const removeWeightFromHistory = date => {
 				:toggle-app-theme="toggleAppTheme"
 				:colors="colors"
 				:add-weight-to-history="addWeightToHistory"
+				:get-last-weight-from-history="getLastWeightFromHistory"
 				:remove-weight-from-history="removeWeightFromHistory"
 				:get-weight-from-history="getWeightFromHistory"
 				:user-previous-data="userPreviousData"
