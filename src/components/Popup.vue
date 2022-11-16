@@ -1,15 +1,15 @@
 <script setup>
 import {watch, onUpdated} from "vue";
 const emit = defineEmits(["close-popup", "open", "close"]);
-const props = defineProps({width: String, height: String, isOpened: Boolean, noClose: Boolean, mode: String});
+const props = defineProps({width: String, height: String, isOpened: Boolean, noClose: Boolean, mode: String, popups: Object, id: String});
 
 const sendFormAppearanceEvent = () => {
-	if (props.isOpened) setTimeout(() => emit("open"));
-	else if (!props.isOpened) setTimeout(() => emit("close"));
+	if (props.popups[props.id].opened) setTimeout(() => emit("open"));
+	else if (!props.popups[props.id].opened) setTimeout(() => emit("close"));
 };
 
 watch(
-	() => props.isOpened,
+	() => props.popups[props.id].opened,
 	() => {
 		sendFormAppearanceEvent();
 	}
@@ -23,7 +23,7 @@ const closePopup = () => {
 <template>
 	<Teleport to=".app">
 		<Transition name="popup">
-			<div v-if="isOpened" class="popup-scene" @click.self="closePopup">
+			<div v-if="popups[id].opened" class="popup-scene" @click.self="closePopup">
 				<section class="popup" :style="{width, height}">
 					<header class="popup__header">
 						<h2 class="popup__title" :class="{'popup__title--centered': mode === 'center'}">

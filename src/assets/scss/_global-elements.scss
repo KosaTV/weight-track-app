@@ -12,7 +12,7 @@
 	border-radius: 3rem;
 	font-size: 1.75rem;
 	font-weight: 500;
-	margin: 1rem 2rem;
+	margin: 1rem;
 	transition: background 0.35s 0s ease, box-shadow 0.35s 0s ease;
 
 	@include c.themed() {
@@ -21,29 +21,77 @@
 		color: c.t(c.$app-bg);
 	}
 
-	&--long {
-		width: 100%;
+	&:hover {
+		@include c.themed() {
+			background: darken(c.t(c.$primary-color), 4);
+			border-color: darken(c.t(c.$primary-color), 4);
+		}
 	}
 
-	&--off {
-		pointer-events: none;
+	&:focus-visible {
 		@include c.themed() {
-			background: c.t(c.$gray-color);
-			box-shadow: none;
+			border: 2px solid c.t(c.$text);
 		}
+	}
+
+	&--long {
+		width: 100%;
 	}
 
 	&--secondary {
 		@include c.themed() {
 			background: none;
-			color: c.t(c.$text);
+			color: c.t(c.$primary-color);
 			border: 2px solid c.t(c.$primary-color);
 			box-shadow: none;
 		}
 
 		&:hover {
 			@include c.themed() {
-				background: none;
+				background: c.t(c.$primary-color);
+				color: c.t(c.$app-bg);
+			}
+		}
+	}
+
+	&--option {
+		margin: 0;
+		padding: 0.5rem;
+
+		@include c.themed() {
+			background: none;
+			color: c.t(c.$primary-color);
+			border-color: none;
+			box-shadow: none;
+		}
+
+		&:hover {
+			@include c.themed() {
+				background: c.t(c.$primary-color);
+				color: c.t(c.$app-bg);
+			}
+		}
+	}
+
+	&--off {
+		all: unset;
+		pointer-events: none;
+		font-family: "inter";
+		border: 2px solid transparent;
+		padding: 1rem 2rem;
+		border-radius: 3rem;
+		font-size: 1.75rem;
+		font-weight: 500;
+		margin: 1rem;
+		$this: &;
+
+		&,
+		&:hover {
+			@include c.themed() {
+				border-color: transparent;
+				background: c.t(c.$gray-color);
+				color: c.t(c.$focus-bg);
+				box-shadow: none;
 			}
 		}
 	}
@@ -52,28 +100,6 @@
 		@include mix.flex;
 		font-weight: 600;
 		font-size: 2rem;
-	}
-
-	&:hover {
-		@include c.themed() {
-			background: darken(c.t(c.$primary-color), 4);
-			border-color: darken(c.t(c.$primary-color), 4);
-		}
-
-		&--off {
-			&:hover {
-				@include c.themed() {
-					background: none;
-					border-color: transparent;
-				}
-			}
-		}
-	}
-
-	&:focus-visible {
-		@include c.themed() {
-			border: 2px solid c.t(c.$text);
-		}
 	}
 }
 

@@ -15,8 +15,16 @@ const getWeightInfoFrom7Days = () => {
 	for (let i = 0; i <= 6; i++) {
 		const now = new Date();
 		now.setDate(new Date().getDate() - i);
+		let weight = props.getWeightFromHistory(now)?.weight;
+		if (!weight) {
+			weight = 0;
+			// let foundLastWeight;
+			// while(!foundLastWeight){
+			// 	now.setDate();
+			// }
+		}
 		weekDays.push(date.weekDays[now.getDay()].substr(0, 3));
-		last7Days.push(props.getWeightFromHistory(now).weight);
+		last7Days.push(weight);
 	}
 	weekDays.reverse();
 	last7Days.reverse();
@@ -40,7 +48,7 @@ const chartData = reactive({
 			borderWidth: 2,
 			borderColor: "hsl(165, 100%, 39%)",
 			tension: 0.4,
-			hoverOffset: 4
+			hoverOffset: 32
 		}
 	]
 });
@@ -95,7 +103,7 @@ watch(props.userDetails, () => {
 });
 
 onMounted(() => {
-	if (props.userPreviousData.length) getWeightInfoFrom7Days();
+	if (props.userPreviousData?.length) getWeightInfoFrom7Days();
 	chartData.datasets[0].data = last7Days;
 	chartData.labels = weekDays;
 });

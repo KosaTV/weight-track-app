@@ -149,14 +149,21 @@ onMounted(() => {
 	doughnutData.colors[0] = gradient;
 
 	gainedWeight = (props.userDetails.currentWeight - props.userDetails.startWeight).toFixed();
-	weightLabel = gainedWeight >= 0 ? "Gained" : "Lost";
+	if (props.userDetails.startWeight < props.userDetails.goalWeight) weightLabel = gainedWeight >= 0 ? "Gained" : "Lost";
+	else weightLabel = gainedWeight >= 0 ? "Lost" : "Gained";
 	doughnutData.centeredText.mainContent = `${props.userDetails.currentWeight} ${props.userDetails.unit}`;
 	doughnutData.centeredText.description = `${weightLabel} ~ ${Math.abs(gainedWeight)} ${props.userDetails.unit}`;
 
 	const progress = getWeightProgress();
 	weightFactor = [progress, 100 - progress];
-	if (progress >= 0) weightLabel = "Gained";
-	else weightLabel = "Lost";
+
+	if (props.userDetails.startWeight < props.userDetails.goalWeight) {
+		if (progress >= 0) weightLabel = "Gained";
+		else weightLabel = "Lost";
+	} else {
+		if (progress >= 0) weightLabel = "Lost";
+		else weightLabel = "Gained";
+	}
 	if (progress > 100) weightFactor = [100, 0];
 	else if (progress < 0) weightFactor = [0, 100];
 	chartData.datasets[0].data = weightFactor;

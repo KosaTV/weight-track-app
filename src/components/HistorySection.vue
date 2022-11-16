@@ -1,6 +1,7 @@
 <script setup>
 import {ref} from "vue";
 import MainWeightStats from "./MainWeightStats.vue";
+import ConfirmPopup from "./ConfirmPopup.vue";
 import WeightStats from "./WeightStats.vue";
 import Box from "./Box.vue";
 import Calendar from "./Calendar.vue";
@@ -11,16 +12,35 @@ const eventTypes = {
 	DECREASE: "DECREASE"
 };
 
-const props = defineProps({userDetails: Object, addWeightToHistory: Function, getWeightFromHistory: Function});
+const props = defineProps([
+	"defaultProfileImage",
+	"colors",
+	"userDetails",
+	"addWeightToHistory",
+	"removeWeightfromHistory",
+	"removeWeightFromHistory",
+	"getWeightFromHistory",
+	"loadUserData",
+	"toggleAppTheme",
+	"colors,",
+	"userPreviousData",
+	"togglePopup",
+	"sectionId",
+	"popups"
+]);
 const emit = defineEmits(["update-weight", "open-popup"]);
 
-const pickedDate = ref("");
+const pickedDate = ref(new Date());
 const modifiedWeightDiff = ref(0);
 
 const modifyWeight = () => {
 	const newWeight = getUserDateWeightFromPickedDate() + modifiedWeightDiff.value;
-	props.addWeightToHistory(newWeight, "kg", pickedDate.value);
+	props.addWeightToHistory(newWeight, pickedDate.value);
 	modifiedWeightDiff.value = 0;
+};
+
+const addNewWeightData = () => {
+	props.togglePopup("updateWeightPopup", {date: pickedDate.value});
 };
 
 const handleWeightChange = (type = eventTypes.INCREASE) => {
@@ -38,6 +58,10 @@ const getUserDateWeightFromPickedDate = () => {
 	return +props.userDetails.weightHistory?.[pickedDate.value.getFullYear()]?.[pickedDate.value.getMonth() + 1]?.[pickedDate.value.getDate()]?.weight;
 };
 
+const deleteWeight = () => {
+	props.removeWeightFromHistory(pickedDate.value);
+};
+
 const getWeight = () => {
 	let weight = (getUserDateWeightFromPickedDate() + modifiedWeightDiff.value).toFixed(1);
 	if (weight.endsWith(".0")) weight = Math.round(weight);
@@ -46,7 +70,6 @@ const getWeight = () => {
 </script>
 <template>
 	<Box :no-header="true">
-		<template #header></template>
 		<template #content><Calendar @dayPick="handleDayPick" :userDetails="props.userDetails" :getWeightFromHistory="getWeightFromHistory" /></template>
 	</Box>
 	<Box v-if="pickedDate" :header-style="{margin: '1rem'}">
@@ -71,16 +94,27 @@ const getWeight = () => {
 						<ion-icon name="chevron-forward-outline"></ion-icon>
 					</button>
 				</div>
-				<button class="button" :class="{'button--off': modifiedWeightDiff === 0}" @click="modifyWeight">Save</button>
+				<div class="history-weight-data__fn-cnt">
+					<button class="button" :class="{'button--off': modifiedWeightDiff === 0}" @click="modifyWeight">Save</button>
+					<button class="button button--option" @click="() => togglePopup('confirmPopup')">
+						<p class="button__icon"><ion-icon name="trash"></ion-icon></p>
+					</button>
+				</div>
 			</div>
 			<div class="history-weight-data" v-else>
 				<span class="history-weight-data__weight">No track</span>
-				<button class="button" @click="modifyWeight">
+				<button class="button" @click="addNewWeightData">
 					Add weight
 					<p class="button__icon"><ion-icon name="add-outline"></ion-icon></p>
 				</button>
 			</div>
 		</template>
 	</Box>
+	<ConfirmPopup :popups="popups" :action="deleteWeight" :togglePopup="togglePopup">
+		<template #title>Delete weight</template>
+		<p style="text-align: center">Are you sure you want to delete weight?</p>
+		<button class="button">yes</button>
+		<button class="button button--secondary" type="button" @click="() => togglePopup('confirmPopup')">no</button>
+	</ConfirmPopup>
 </template>
 <style scoped></style>

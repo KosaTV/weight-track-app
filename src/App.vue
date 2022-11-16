@@ -1,6 +1,7 @@
 <script setup>
 import Menu from "../src/components/Menu.vue";
 import {default as dateHelper} from "../src/helpers/date";
+import AboutPopup from "../src/components/AboutPopup.vue";
 import ProfileInfoPopup from "../src/components/ProfileInfoPopup.vue";
 import UpdateWeightPopup from "../src/components/UpdateWeightPopup.vue";
 import HomeSection from "../src/components/HomeSection.vue";
@@ -57,14 +58,19 @@ const userDetails = reactive({
 				15: {
 					weight: "80",
 					unit: "kg"
+				},
+				16: {
+					weight: "80",
+					unit: "kg"
 				}
 			}
 		}
 	}
 });
 
-const togglePopup = name => {
-	popups[name] = !popups[name];
+const togglePopup = (name, options = {}) => {
+	if (options) popups[name].options = options;
+	popups[name].opened = !popups[name].opened;
 };
 
 const addUserDataToStorage = () => {
@@ -74,13 +80,37 @@ const addUserDataToStorage = () => {
 const loadUserData = () => {
 	if (userPreviousData.value) {
 		const userPreviousDataObject = JSON.parse(userPreviousData.value);
-		for (let property in userPreviousDataObject) {
+		Object.entries(userPreviousDataObject).forEach(([property, value]) => {
 			userDetails[property] = userPreviousDataObject[property];
-		}
+		});
 	}
 };
 
-const popups = reactive({updateWeightPopup: false, profileInfoPopup: !userPreviousData.value});
+const getLastWeightFromHistory = () => {
+	const years = Object.keys(userDetails.weightHistory);
+	const lastYear = years[years.length - 1];
+	const months = Object.keys(userDetails.weightHistory[lastYear]);
+	const lastMonth = months[months.length - 1];
+	const days = Object.keys(userDetails.weightHistory[lastYear][lastMonth]);
+	const lastDay = days[days.length - 1];
+
+	const latestWeight = userDetails.weightHistory[lastYear]?.[lastMonth]?.[lastDay];
+	return latestWeight.weight;
+};
+
+getLastWeightFromHistory();
+
+const popups = reactive({
+	updateWeightPopup: {
+		opened: false,
+		options: {},
+		onOpen: () => {},
+		onClose: () => {}
+	},
+	profileInfoPopup: {opened: !userPreviousData.value, options: {}, onOpen: () => {}, onClose: () => {}},
+	aboutAppPopup: {opened: false, options: {}, onOpen: () => {}, onClose: () => {}},
+	confirmPopup: {opened: false, options: {}, onOpen: () => {}, onClose: () => {}}
+});
 
 const setDarkTheme = () => {
 	document.body.classList.add("theme--dark");
@@ -149,6 +179,7 @@ onBeforeMount(() => {
 watch(userDetails, () => {
 	addUserDataToStorage();
 	userDetails.darkTheme ? setDarkTheme() : setWhiteTheme();
+	userDetails.currentWeight = getLastWeightFromHistory();
 });
 
 const getStoragePlaceForDate = (year, month, day) => {
@@ -171,11 +202,37 @@ const updateWeight = () => {
 	1;
 };
 
-const addWeightToHistory = (weight, unit = "kg", date = new Date()) => {
+const sortWeightHistory = () => {
+	Object.keys(userDetails.weightHistory).sort((yearA, yearB) => {
+		return yearA - yearB;
+	});
+
+	const years = Object.keys(userDetails.weightHistory);
+	const lastYear = years[years.length - 1];
+
+	Object.keys(userDetails.weightHistory[lastYear]).sort((monthA, monthB) => {
+		return monthA - monthB;
+	});
+
+	const months = Object.keys(userDetails.weightHistory[years[years.length - 1]]);
+	const lastMonth = months[months.length - 1];
+
+	Object.keys(userDetails.weightHistory[lastYear][lastMonth]).sort((dayA, dayB) => {
+		return dayA - dayB;
+	});
+};
+
+const addWeightToHistory = (weight, date = new Date(), unit = "kg") => {
 	const {year, month, day} = dateHelper.getDateDetails(date);
 	getStoragePlaceForDate(year, month, day);
 	userDetails.weightHistory[year][month][day] = {weight, unit};
-	updateWeight();
+	sortWeightHistory();
+	if (day === new Date().getDate()) updateWeight();
+};
+
+const removeWeightFromHistory = date => {
+	const {year, month, day} = dateHelper.getDateDetails(date);
+	delete userDetails.weightHistory[year][month][day];
 };
 </script>
 
@@ -206,14 +263,19 @@ const addWeightToHistory = (weight, unit = "kg", date = new Date()) => {
 				:toggle-app-theme="toggleAppTheme"
 				:colors="colors"
 				:add-weight-to-history="addWeightToHistory"
+				:remove-weight-from-history="removeWeightFromHistory"
 				:get-weight-from-history="getWeightFromHistory"
 				:user-previous-data="userPreviousData"
+				:toggle-popup="togglePopup"
+				:section-id="sectionId"
+				:popups="popups"
 			/>
 		</KeepAlive>
 	</main>
 	<Menu :sections-data="sectionsData" :sections="sections" @change-section="id => (sectionId = id)" />
 	<ProfileInfoPopup :popups="popups" :toggle-popup="togglePopup" :add-weight-to-history="addWeightToHistory" :user-details="userDetails" />
 	<UpdateWeightPopup :popups="popups" :toggle-popup="togglePopup" :add-weight-to-history="addWeightToHistory" :user-details="userDetails" />
+	<AboutPopup :popups="popups" :toggle-popup="togglePopup" />
 </template>
 
 <style scoped></style>

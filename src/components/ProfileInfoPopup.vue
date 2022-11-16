@@ -3,7 +3,7 @@ import {ref, reactive} from "vue";
 import defaultProfileImage from "../assets/imgs/default_profile.jpg";
 import {getBMI} from "../helpers/bodyMeasurementFns";
 
-const props = defineProps(["popups", "togglePopup", "userDetails"]);
+const props = defineProps(["popups", "togglePopup", "userDetails", "addWeightToHistory"]);
 const nameInput = ref(null);
 const imgInput = ref(null);
 const id = "profileInfoPopup";
@@ -29,9 +29,9 @@ const prepareNewProfileImage = e => {
 };
 
 const setupNewUser = () => {
-	for (let property in userFormData) {
+	Object.entries(userFormData).forEach(([property, value]) => {
 		props.userDetails[property] = userFormData[property];
-	}
+	});
 	props.userDetails.startWeight = userFormData.currentWeight;
 	props.userDetails.BMI = getBMI(userFormData.currentWeight, userFormData.height);
 };
@@ -41,7 +41,7 @@ const onWelcomePopupOpen = () => {
 };
 </script>
 <template>
-	<Popup :is-opened="popups.profileInfoPopup" @close-popup="() => togglePopup(id)" height="100%" @open="onWelcomePopupOpen" noClose :mode="'center'">
+	<Popup :popups="popups" :id="id" @close-popup="() => togglePopup(id)" height="100%" @open="onWelcomePopupOpen" noClose :mode="'center'">
 		<template #header>Welcome!</template>
 		<form
 			class="popup-form"

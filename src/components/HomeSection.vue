@@ -3,7 +3,20 @@ import MainWeightStats from "./MainWeightStats.vue";
 import WeightStats from "./WeightStats.vue";
 import Tile from "./Tile.vue";
 
-const props = defineProps({userDetails: Object, colors: Object, getWeightFromHistory: Function, userPreviousData: String});
+const props = defineProps([
+	"defaultProfileImage",
+	"colors",
+	"userDetails",
+	"addWeightToHistory",
+	"getWeightFromHistory",
+	"loadUserData",
+	"toggleAppTheme",
+	"colors,",
+	"userPreviousData",
+	"togglePopup",
+	"sectionId",
+	"popups"
+]);
 const emit = defineEmits(["update-weight", "open-popup"]);
 </script>
 <template>

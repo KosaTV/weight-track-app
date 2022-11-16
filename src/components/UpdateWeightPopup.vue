@@ -15,13 +15,14 @@ watch(props.userDetails, () => {
 });
 </script>
 <template>
-	<Popup :is-opened="popups.updateWeightPopup" @close-popup="() => togglePopup(id)" height="290px" @open="onUpdateWeightPopupOpen">
+	<Popup :popups="popups" :id="id" @close-popup="() => togglePopup(id)" height="290px" @open="onUpdateWeightPopupOpen">
 		<template #header>Update Weight</template>
 		<form
 			class="update-weight-popup-cnt"
 			@submit.prevent="
 				() => {
-					addWeightToHistory(newWeight);
+					if (popups[id].options.date) addWeightToHistory(newWeight, popups[id].options.date);
+					else addWeightToHistory(newWeight);
 					togglePopup(id);
 				}
 			"

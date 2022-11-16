@@ -78,6 +78,10 @@
 			color: c.t(c.$primary-color);
 		}
 	}
+
+	&__fn-cnt {
+		@include mix.flex(center, center, column);
+	}
 }
 
 .weight-data {

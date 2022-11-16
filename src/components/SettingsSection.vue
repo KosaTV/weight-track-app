@@ -1,9 +1,27 @@
 <script setup>
+import {watch} from "vue";
 import Box from "./Box.vue";
 import Toggler from "./Toggler.vue";
 
-const props = defineProps({toggleAppTheme: Function, userDetails: Object});
+const props = defineProps([
+	"defaultProfileImage",
+	"colors",
+	"userDetails",
+	"addWeightToHistory",
+	"getWeightFromHistory",
+	"loadUserData",
+	"toggleAppTheme",
+	"colors,",
+	"userPreviousData",
+	"togglePopup",
+	"sectionId",
+	"popups"
+]);
 const emit = defineEmits(["updateWeight", "openPopup"]);
+const goToProfileSection = () => {
+	props.sectionId = 3;
+	console.log(props.sectionId);
+};
 </script>
 <template>
 	<div>
@@ -24,7 +42,7 @@ const emit = defineEmits(["updateWeight", "openPopup"]);
 							<Toggler :toggle="userDetails.darkTheme" @toggle="toggleAppTheme" />
 						</div>
 					</li>
-					<li class="settings-list-item">
+					<li @click="goToProfileSection" class="settings-list-item">
 						<div class="settings-list-item__text">
 							<span class="settings-list-item__icon">
 								<ion-icon name="person-circle-outline"></ion-icon>
@@ -32,7 +50,7 @@ const emit = defineEmits(["updateWeight", "openPopup"]);
 							<h2 class="settings-list-item__name">Profile</h2>
 						</div>
 					</li>
-					<li class="settings-list-item">
+					<li @click="() => togglePopup('aboutAppPopup')" class="settings-list-item">
 						<div class="settings-list-item__text">
 							<span class="settings-list-item__icon">
 								<ion-icon name="help-circle-outline"></ion-icon>

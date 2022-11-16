@@ -3,7 +3,21 @@ import {ref} from "vue";
 import Box from "./Box.vue";
 import Toggler from "./Toggler.vue";
 
-const props = defineProps({userDetails: Object, defaultProfileImage: String, loadUserData: Function});
+const props = defineProps([
+	"popups",
+	"defaultProfileImage",
+	"colors",
+	"userDetails",
+	"addWeightToHistory",
+	"getWeightFromHistory",
+	"loadUserData",
+	"toggleAppTheme",
+	"colors,",
+	"userPreviousData",
+	"togglePopup",
+	"sectionId"
+]);
+
 const imgInput = ref(null);
 const newImage = ref(null);
 
