@@ -3,9 +3,9 @@ import {ref, reactive} from "vue";
 import defaultProfileImage from "../assets/imgs/default_profile.jpg";
 import {getBMI} from "../helpers/bodyMeasurementFns";
 
-const props = defineProps(["popups", "togglePopup", "userDetails", "addWeightToHistory"]);
+const props = defineProps(["popups", "togglePopup", "userDetails", "addWeightToHistory", "userPreviousData"]);
 const nameInput = ref(null);
-const imgInput = ref(null);
+const imgFromInput = ref("");
 const id = "profileInfoPopup";
 
 const userFormData = reactive({
@@ -18,28 +18,53 @@ const userFormData = reactive({
 	unit: props.userDetails.unit
 });
 
-const prepareNewProfileImage = e => {
-	const img = imgInput.value.files[0];
+const prepareNewProfileImage = async img => {
 	const reader = new FileReader();
 	reader.readAsDataURL(img);
 
-	reader.onload = () => {
-		userFormData.profileImage = reader.result;
-	};
+	const promise = new Promise((res, rej) => {
+		reader.onload = () => {
+			res(reader.result);
+		};
+
+		reader.onerror = () => {
+			rej("couldn't load profile image");
+		};
+	});
+
+	let result = false;
+
+	await promise
+		.then(res => {
+			result = res;
+		})
+		.catch(err => {
+			result = err;
+		});
+
+	return result;
 };
 
-const setupNewUser = () => {
+const changeProfileImage = async e => {
+	imgFromInput.value = e.target.files[0];
+	const img = await prepareNewProfileImage(imgFromInput.value);
+	userFormData.profileImage = img;
+};
+
+const setupNewUser = async () => {
 	Object.entries(userFormData).forEach(([property, value]) => {
 		props.userDetails[property] = userFormData[property];
 	});
 	props.userDetails.startWeight = userFormData.currentWeight;
 	props.userDetails.BMI = getBMI(userFormData.currentWeight, userFormData.height);
+	props.addWeightToHistory(props.userDetails.currentWeight);
 };
 
 const onWelcomePopupOpen = () => {
 	nameInput.value.focus();
 };
 </script>
+
 <template>
 	<Popup :popups="popups" :id="id" @close-popup="() => togglePopup(id)" height="100%" @open="onWelcomePopupOpen" noClose :mode="'center'">
 		<template #header>Welcome!</template>
@@ -62,8 +87,13 @@ const onWelcomePopupOpen = () => {
 									<ion-icon name="camera-outline"></ion-icon>
 								</span>
 							</label>
-							<input class="file-input" type="file" name="profile-img" ref="imgInput" id="profile-img" @change="prepareNewProfileImage" />
-							<img :src="userFormData.profileImage" alt="profile" class="profile__img popup__profile-img" @load="handleNewImage" />
+							<input class="file-input" type="file" name="profile-img" id="profile-img" @change="changeProfileImage" />
+							<img
+								:src="userPreviousData ? userFormData.profileImage || props.userDetails.profileImage : props.userDetails.profileImage || userFormData.profileImage"
+								alt="profile"
+								class="profile__img popup__profile-img"
+								@load="handleNewImage"
+							/>
 						</div>
 					</div>
 				</section>

@@ -20,7 +20,7 @@ $themes: (
 		primary-color: hsl(165, 100%, 39%),
 		second-color: $white-bg,
 		focus-bg: $white-bg,
-		gray-color: hsl(0 0% 70%),
+		gray-color: hsl(0 0% 85%),
 		accent-color: hsl(0 0% 96%),
 		hover-color: hsl(0 0% 98%),
 		shadow-color: rgba(0, 0, 0, 0.05),
@@ -35,7 +35,7 @@ $themes: (
 		gray-color: hsl(233, 15%, 54%),
 		accent-color: hsl(238, 35%, 15%),
 		hover-color: hsl(238, 30%, 15%),
-		shadow-color: rgba(0 0 0 / 50%),
+		shadow-color: rgba(0, 0, 0, 0.5),
 		shadow: 0 15px 35px 0 rgba(0 0 0 / 50%),
 		text: $white-bg
 	)

@@ -1,5 +1,6 @@
 <script setup>
 import Menu from "../src/components/Menu.vue";
+import {setApplicationSize} from "../src/helpers/configFns";
 import {default as dateHelper} from "../src/helpers/date";
 import AboutPopup from "../src/components/AboutPopup.vue";
 import ProfileInfoPopup from "../src/components/ProfileInfoPopup.vue";
@@ -10,8 +11,9 @@ import SettingsSection from "../src/components/SettingsSection.vue";
 import ProfileSection from "../src/components/ProfileSection.vue";
 import {reactive, markRaw, ref, onBeforeMount, watch} from "vue";
 
-const sectionId = ref(0);
+const sectionId = reactive({current: 0, previous: 0});
 const userPreviousData = ref(localStorage.getItem("userDetails"));
+const fullScreenContentMode = ref(false);
 
 const userDetails = reactive({
 	name: "",
@@ -24,49 +26,13 @@ const userDetails = reactive({
 	goalWeight: "",
 	unit: "kg",
 	BMI: "",
-	weightHistory: {
-		2022: {
-			11: {
-				8: {
-					weight: "72",
-					unit: "kg"
-				},
-				9: {
-					weight: "73",
-					unit: "kg"
-				},
-				10: {
-					weight: "73",
-					unit: "kg"
-				},
-				11: {
-					weight: "73",
-					unit: "kg"
-				},
-				12: {
-					weight: "76",
-					unit: "kg"
-				},
-				13: {
-					weight: "73",
-					unit: "kg"
-				},
-				14: {
-					weight: "80",
-					unit: "kg"
-				},
-				15: {
-					weight: "80",
-					unit: "kg"
-				},
-				16: {
-					weight: "80",
-					unit: "kg"
-				}
-			}
-		}
-	}
+	weightHistory: {}
 });
+
+const switchSection = id => {
+	sectionId.previous = sectionId.current;
+	sectionId.current = id;
+};
 
 const togglePopup = (name, options = {}) => {
 	if (options) popups[name].options = options;
@@ -137,9 +103,9 @@ const colors = reactive({
 });
 
 const sectionsData = reactive([
-	{icon: `<ion-icon name="home-outline"></ion-icon>`, text: "Home", active: true},
-	{icon: `<ion-icon name="calendar-clear-outline"></ion-icon>`, text: "History", active: false},
-	{icon: `<ion-icon name="settings-outline"></ion-icon>`, text: "Settings", active: false}
+	{icon: `<ion-icon name="home"></ion-icon>`, text: "Home", active: true},
+	{icon: `<ion-icon name="calendar-clear"></ion-icon>`, text: "History", active: false},
+	{icon: `<ion-icon name="settings"></ion-icon>`, text: "Settings", active: false}
 ]);
 
 const sections = markRaw([
@@ -171,6 +137,7 @@ const initConfiguration = () => {
 };
 
 onBeforeMount(() => {
+	setApplicationSize();
 	initConfiguration();
 });
 
@@ -178,6 +145,10 @@ watch(userDetails, () => {
 	addUserDataToStorage();
 	userDetails.darkTheme ? setDarkTheme() : setWhiteTheme();
 	userDetails.currentWeight = getLastWeightFromHistory();
+});
+
+watch(sectionId, () => {
+	fullScreenContentMode.value = sectionId.current === 3;
 });
 
 const getStoragePlaceForDate = (year, month, day) => {
@@ -235,12 +206,12 @@ const removeWeightFromHistory = date => {
 </script>
 
 <template>
-	<header class="app-header">
+	<header class="app-header" v-show="!fullScreenContentMode">
 		<section class="section">
 			<h5 class="section__header section__header--secondary">Overview</h5>
-			<h1 class="section__header section__header--main">{{ sections[sectionId].name }}</h1>
+			<h1 class="section__header section__header--main">{{ sections[sectionId.current].name }}</h1>
 		</section>
-		<section class="profile" @click="() => (sectionId = 3)">
+		<section class="profile" @click="() => switchSection(3)">
 			<div class="img-section">
 				<div class="profile-cnt">
 					<img :src="userDetails.profileImage" alt="profile" class="profile__img" />
@@ -249,12 +220,12 @@ const removeWeightFromHistory = date => {
 			</div>
 		</section>
 	</header>
-	<main class="main">
+	<main class="main" :style="[`padding-bottom: ${fullScreenContentMode ? '0' : ''}`]">
 		<KeepAlive>
 			<component
 				@update-weight="updateWeight"
 				@open-popup="id => togglePopup(id)"
-				:is="sections[sectionId].content"
+				:is="sections[sectionId.current].content"
 				:default-profile-image="userDetails.profileImage"
 				:load-user-data="loadUserData"
 				:user-details="userDetails"
@@ -266,13 +237,20 @@ const removeWeightFromHistory = date => {
 				:get-weight-from-history="getWeightFromHistory"
 				:user-previous-data="userPreviousData"
 				:toggle-popup="togglePopup"
+				:switch-section="switchSection"
 				:section-id="sectionId"
 				:popups="popups"
 			/>
 		</KeepAlive>
 	</main>
-	<Menu :sections-data="sectionsData" :sections="sections" @change-section="id => (sectionId = id)" />
-	<ProfileInfoPopup :popups="popups" :toggle-popup="togglePopup" :add-weight-to-history="addWeightToHistory" :user-details="userDetails" />
+	<Menu :sections-data="sectionsData" :sections="sections" @change-section="id => switchSection(id)" v-show="!fullScreenContentMode" />
+	<ProfileInfoPopup
+		:popups="popups"
+		:toggle-popup="togglePopup"
+		:add-weight-to-history="addWeightToHistory"
+		:user-details="userDetails"
+		:user-previous-data="userPreviousData"
+	/>
 	<UpdateWeightPopup :popups="popups" :toggle-popup="togglePopup" :add-weight-to-history="addWeightToHistory" :user-details="userDetails" />
 	<AboutPopup :popups="popups" :toggle-popup="togglePopup" />
 </template>

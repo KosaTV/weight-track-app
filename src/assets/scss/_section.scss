@@ -187,3 +187,21 @@
 		opacity: 0.75;
 	}
 }
+
+.section-close-btn {
+	@include mix.pos;
+	@include mix.flex;
+	cursor: pointer;
+	border: none;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	font-size: 5rem;
+	margin: 2rem;
+	background: none;
+	z-index: 100;
+
+	@include c.themed() {
+		color: c.t(c.$text);
+	}
+}

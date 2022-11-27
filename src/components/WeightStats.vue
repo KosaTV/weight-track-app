@@ -24,12 +24,6 @@ const getWeightInfoFrom7Days = () => {
 		const now = new Date();
 		now.setDate(new Date().getDate() - i);
 		let weight = props.getWeightFromHistory(now)?.weight;
-		//* It can be deleted if you want your chart to missing values, which is better instead of filling it by previous values
-		// if (!weight && i !== 0) {
-		// 	// weight = props.getLastWeightFromHistory();
-		// } else if (i === 0) {
-		// 	//TODO: include case
-		// }
 		weekDays.push(date.weekDays[now.getDay()].substr(0, 3));
 		last7Days.push(weight);
 	}

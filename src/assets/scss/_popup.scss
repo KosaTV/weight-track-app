@@ -15,17 +15,15 @@
 .popup-scene {
 	@include mix.pos(absolute, 0, 0);
 	@include mix.flex;
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
 	background: hsla(0, 0%, 0%, 0.15);
 	z-index: 100000;
 }
 
 .popup {
 	$inner-space: 2rem;
-	@include mix.pos(absolute);
 	@include mix.flex(stretch, flex-start, column);
-
 	border-radius: 1.5rem;
 	margin: 1rem;
 	max-width: 600px;
@@ -57,7 +55,7 @@
 
 	&__header {
 		@include mix.flex(space-between);
-		padding: 1rem $inner-space;
+		padding: $inner-space;
 		border-radius: 1rem;
 	}
 

@@ -14,13 +14,12 @@ const props = defineProps([
 	"colors,",
 	"userPreviousData",
 	"togglePopup",
-	"sectionId",
+	"switchSection",
 	"popups"
 ]);
 const emit = defineEmits(["updateWeight", "openPopup"]);
 const goToProfileSection = () => {
-	props.sectionId = 3;
-	console.log(props.sectionId);
+	props.switchSection(3);
 };
 </script>
 <template>
